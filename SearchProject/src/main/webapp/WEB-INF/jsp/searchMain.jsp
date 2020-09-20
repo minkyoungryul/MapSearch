@@ -15,19 +15,19 @@
 
 		//검색 버튼 클릭 시 카카오 키워드 검색 API 호출
 		$(".btn-search").click(function(){
-			search();
+			search($("#searchWord").val());
 		});
 
 		//엔터키 누를시 카카오 키워드 검색 API 호출
 		$("form input").keydown(function(key){
 			if(key.keyCode == 13){
-				search();
+				search($("#searchWord").val());
 			}
 		});
 	});
 
-	function search(){
-		var searchWord = encodeURIComponent($("#searchWord").val());
+	function search(keyword){
+		var searchWord = encodeURIComponent(keyword);
 		var page = 1;
 		var size = 10;
 		location.href="/map?query="+searchWord+"&page="+page+"&size="+size;
@@ -52,7 +52,7 @@
           	<span>인기검색어</span>
           </c:if>
           <c:forEach var="keyword" begin="0" end="9" items="${keywordList}">
-            <span>${keyword.keyword} ${keyword.count}</span>
+            <span class="pop_keyword" onclick="search('${keyword.keyword}')">${keyword.keyword} ${keyword.count}</span>
           </c:forEach> 
           </div>
         </fieldset>

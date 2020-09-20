@@ -14,6 +14,10 @@
 Git, Java 는 설치되어 있다고 가정한다.
 
 - 빌드 방법
-  - IDE에서 File-> Import -> git -> Projects from Git -> Clone URI -> URL에 https://github.com/minkyoungryul/test-kakaobank 입력 -> Finish
+  - 소스 다운로드
+  - IDE에서 File-> Import -> Existing Maven Projects -> 내려 받은 소스의 SearchProject 폴더 선택 후 Finish
+  - SearchProject의 SearchProjectApplication.java 파일 Spring Boot App 실행
 
 접속 Base URI: http://localhost:8080
+
+

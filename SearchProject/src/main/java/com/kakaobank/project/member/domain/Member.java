@@ -60,7 +60,7 @@ public class Member extends BaseModel {
 
 	@Override
 	public String toString() {
-		return "Member [id=" + id + ", email=" + email + ", name=" + name + ", password=" + password + "]";
+		return "Member [id=" + id + ", email=" + email + ", name=" + name + ", password=" + password + ", resultCode="+ super.getResultCode() +"]";
 	}
 	
 	

@@ -21,6 +21,7 @@ public class SearchService {
 	@Autowired
 	private SearchRepository searchRepository;
 	
+	//카카오 API 호출
 	public LocationInfo getSearchList(String url, String key, Map<String, Object> paramMap) throws Exception{
 		
 		String jsonData;
@@ -42,6 +43,7 @@ public class SearchService {
 		return locationInfo; 
 	}
 	
+	//검색한 키워드 저장
 	public void saveKeyword(String keyword) throws Exception {
 		Search search = searchRepository.findByKeyword(keyword);
 		try {
@@ -62,6 +64,7 @@ public class SearchService {
 		}
 	}
 	
+	//인기 검색어 조회
 	public List<Search> getPopKeywordList(){
 		List<Search> popKeywordList = searchRepository.findAll(Sort.by("count").descending());
 		

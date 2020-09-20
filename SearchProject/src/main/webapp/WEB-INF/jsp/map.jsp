@@ -1,9 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ page session="false"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<link rel="stylesheet" type="text/css"  href="${pageContext.request.contextPath}/resources/css/map.css"/>
+<link rel="stylesheet" type="text/css"  href="/resources/css/map.css"/>
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=264f61fee55395dff416e6583a709a07"></script>
@@ -15,10 +14,10 @@
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-		<!-- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
-		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.js"></script>
-		 -->
+		<script type="text/javascript" src="/resources/js/sha256.js"></script>
+		
 	</head>
+	
 	<body>
 	
 	<script>
@@ -60,8 +59,71 @@
 				location.href="/";
 			});
 		});
-	
-		
+
+		function doLogin(){
+
+			var userId = String($('#userId').val());
+			var userPw = String($('#userPw').val());
+			
+			var encUserPw = SHA256(userPw);
+			
+			var memberParam = {
+				"email":userId,
+				"password":encUserPw
+			};
+
+			
+
+			$.ajax({
+				contentType:"application/json",
+				dataType:"json",
+				type:"POST",
+				url: "/loginAjax",
+				data: JSON.stringify(memberParam),
+				async: false,
+				dataType: 'json',
+				success: function(data){
+					if(data){
+						alert("로그인성공");
+						location.reload();
+					}else{
+						alert("아이디/패스워드가 일치하지 않습니다.");
+					}
+				},
+				fail: function(e){
+					
+					alert('예기치 않은 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+				},
+				error: function(e){
+					console.log(e);
+					alert('예기치 않은 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+				}
+			});
+			
+		}
+
+		function logout(){
+			$.ajax({
+				type:"GET",
+				url: "/logoutAjax",
+				async: false,
+				success: function(data){
+					if(data){
+						alert("로그아웃 되었습니다.");
+						location.reload();
+					}else{
+						alert('예기치 않은 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+					}
+				},
+				fail: function(e){
+					alert('예기치 않은 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+				},
+				error: function(e){
+					console.log(e);
+					alert('예기치 않은 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+				}
+			});
+		}
 	
 		function mapInit(x,y){
 			if(x == "" || y == ""){
@@ -101,45 +163,6 @@
 		function movePage(page){
 			location.href="/map?query="+'${locationInfo.keyword}'+"&page="+page+"&size="+10;
 		}      
-	
-		/* function keywordApi(searchWord,page){
-			var searchParam = {
-				"query" : searchWord,
-				"size" : 10,
-				"page" : page
-			};
-			
-			$.ajax({
-				contentType:"application/json",
-				dataType:"json",
-				type:"GET",
-				url: "/searchAjax",
-				data: searchParam,
-				async: false,
-				success: function(data){
-
-					
-					
-					var placeNm = data.documents[0].place_name;
-					var category = data.documents[0].category_name;
-					var x = data.documents[0].x;
-					var y = data.documents[0].y;
-					var address = data.documents[0].address_name;
-					var roadAddress = data.documents[0].road_address_name;
-					var phone = data.documents[0].phone;
-					var placeUrl = data.documents[0].place_url;
-					var placeId = data.documents[0].id;
-					changeLocation(x,y,placeNm,category,address,roadAddress,phone,placeUrl,placeId);
-				},
-				fail: function(e){
-					alert('예기치 않은 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-				},
-				error: function(e){
-					alert('예기치 않은 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-				}
-			});
-			
-		} */
 
 		function changeLocation(x,y,placeNm,category,address,roadAddress,phone,placeUrl,placeId){
 
@@ -161,6 +184,7 @@
 			<div class="row h-100">
 				<div class="chat"><div class="card mb-sm-3 mb-md-0 contacts_card">
 					<div class="card-header">
+					
 						<div class="input-group">
 							<input type="text" placeholder="장소 검색" name="" id="searchWord" class="form-control search">
 							<div class="input-group-prepend">
@@ -198,7 +222,7 @@
 							    <li class="page-item disabled">
 							      <a class="page-link" href="#" tabindex="-1">Previous</a>
 							    </li>
-							</c:if>    
+							</c:if>
 						    <c:forEach var="page" begin="1" end="${locationInfo.meta.pageableCount % 10 > 0 ? locationInfo.meta.pageableCount / 10 + 1 : locationInfo.meta.pageableCount / 10}" varStatus="idx">
 						    	<li class="${locationInfo.page == idx.index ? 'page-item active' : 'page-item'}"><a class="page-link" onclick="movePage(${idx.index})">${idx.index}</a></li>
 						    </c:forEach>
@@ -221,15 +245,27 @@
 							</svg>
 						</div>
 						<div class="map_div">
-							<div class="input_login">
-								<p class="txt">ID <input type="text" name="" class="id"></p>
-							</div>
-							<div class="input_login">
-								<p class="txt">PW <input type="text" name="" class="pw"></p>
-							</div>
-							<div class="input_login">
-								<button type="button" class="btn btn-primary" id="btn_login">Login</button>
-							</div>
+							<c:choose>
+								<c:when test="${not empty sessionName}">
+									<div class="user_name"> ${sessionName}님 반갑습니다</div>
+									<div class="logout">
+										<button type="button" class="btn btn-primary" id="btn_logout" onclick="logout()">Logout</button>
+									</div>
+								</c:when>
+								<c:when test="${empty sessionName}">
+									<form id="loginForm" name="loginForm" method="POST">
+										<div class="input_login">
+											<p class="txt">ID <input type="text" name="userId" class="userId" id="userId" value="minkr3321@naver.com"></p>
+										</div>
+										<div class="input_login">
+											<p class="txt">PW <input type="password" name="userPw" class="userPw" id="userPw" value="1234"></p>
+										</div>
+										<div class="input_login">
+											<button type="button" class="btn btn-primary" id="btn_login" onclick="doLogin()">Login</button>
+										</div>
+									</form>
+								</c:when>
+							</c:choose>
 						</div>
 					</div>
 					<div class="map_body" id="map_body">

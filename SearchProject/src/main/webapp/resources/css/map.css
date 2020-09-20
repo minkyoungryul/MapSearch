@@ -137,11 +137,11 @@ body, html {
 	color: white;
 }
 
-.id {
+.userId {
 	border-radius: 10px 10px 10px 10px;
 }
 
-.pw {
+.userPw {
 	border-radius: 10px 10px 10px 10px;
 }
 .search_result{
@@ -224,6 +224,16 @@ body, html {
 	margin-left: 10px;
 	margin-right: 10px;
 	
+}
+.user_name{
+	float: left;
+	font-size: 20px;
+	color: white;
+	padding-right: 20px;
+}
+.logout{
+	float: left;
+	padding-right: 10px;
 }
 @media ( max-width : 576px) {
 	.contacts_card {

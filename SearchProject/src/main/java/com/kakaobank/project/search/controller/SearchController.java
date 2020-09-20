@@ -1,12 +1,20 @@
 package com.kakaobank.project.search.controller;
 
 import java.net.URLEncoder;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,11 +48,9 @@ public class SearchController {
 	@Autowired
 	private MemberService memberService;
 	
-	@RequestMapping(value="/")
-	public String searchMain(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
-		
-		//회원 정보 저장
-		memberService.saveMember();
+	//첫 페이지
+	@RequestMapping(value="/", method = RequestMethod.GET)
+	public String searchMain(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException {
 		
 		//인기검색어 조회
 		List<Search> popKeywordList = searchService.getPopKeywordList();
@@ -53,16 +59,17 @@ public class SearchController {
 		return "searchMain";
 	}
 	
+	//검색화면
 	@RequestMapping(value="/map")
-	public String searchMap(HttpServletRequest request, HttpServletResponse response, ModelMap model, SearchParam param) {
+	public String searchMap(HttpServletRequest request, HttpServletResponse response, ModelMap model, SearchParam param) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		
 		try {
 			//검색한 내용 DB 저장
 			searchService.saveKeyword(param.getQuery());
 		} catch (Exception e) {
-			System.out.println(e);
 		}
 		
+		//검색 결과 조회 (카카오 API호출)
 		LocationInfo locationInfo = searchCommonResult(param);
 		
 		model.addAttribute("locationInfo",locationInfo);
@@ -70,18 +77,9 @@ public class SearchController {
 		return "map";
 	}
 	
-	@RequestMapping(value="/searchAjax", method = RequestMethod.GET)
-	@ResponseBody
-	public LocationInfo searchAjax(HttpServletRequest request, HttpServletResponse response, SearchParam param){
-		
-		//검색 리스트 가져오기 (카카오 키워드 검색 API 호출)
-		LocationInfo locationInfo = searchCommonResult(param);
-		
-		return locationInfo;
-	}
-	
+	//검색 결과 조회 (카카오 API호출)
 	public LocationInfo searchCommonResult(SearchParam param) {
-		LocationInfo locationInfo = new LocationInfo();
+		LocationInfo locationInfo;
 		String resultCode = "";
 		
 		try {
@@ -90,17 +88,20 @@ public class SearchController {
 			mapParam.put("size", param.getSize());
 			mapParam.put("page", param.getPage());
 			
+			//카카오 API 연동
 			locationInfo = searchService.getSearchList(keywordApiUrl, key, mapParam);
 			locationInfo.setPage(param.getPage());
-			System.out.println(locationInfo.toString());
 			
+			//정상 호출시
 			if(!StringUtils.isEmpty(locationInfo) && locationInfo.getDocuments().size() > 0) {
 				resultCode = "0000";
 			}else {
 				//검색 데이터가 없을때
+				locationInfo = new LocationInfo();
 				resultCode = "1111";
 			}
 		} catch (Exception e) {
+			locationInfo = new LocationInfo();
 			resultCode = "9999";
 		}
 		

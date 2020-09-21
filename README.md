@@ -9,6 +9,8 @@
 - JPA
 - H2
 
+## 라이브러리
+- Boot Strap CSS 활용
 
 ## 빌드 및 실행 방법
 Git, Java 는 설치되어 있다고 가정한다.
